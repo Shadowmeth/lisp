@@ -54,6 +54,36 @@ struct ast_node *new_op_node(int op)
 	return new;
 }
 
+bool number(struct ast_node *n)
+{
+	bool num_found = false;
+	int v = 0;
+
+	if (match('-'))  {	/* negative number, we assume that a number is found after -, if there isn't any, assume 0 */ 
+
+		while (isdigit(input[lookahead])) {
+			v = v * 10 + input[lookahead] - '0';
+			lookahead++;
+		}
+		num_found = true;
+	
+	} else if (isdigit(input[lookahead])) {	/* positive number */
+
+		while (isdigit(input[lookahead])) {
+			v = v * 10 + input[lookahead] - '0';
+			lookahead++;
+		}
+
+		num_found = true;
+	}
+
+	if (num_found) {
+		/* go to the left most leaf of n and add a number */
+			
+
+	}
+}
+
 bool match(int ch)
 {
 	if (input[lookahead] == ch) {
@@ -95,12 +125,19 @@ bool expr(struct ast_node *n)
 	if (number(n)) { /* if a number is found add to the left of n as a new ast_node */
 		return true;
 	} else {
-		match('(');
+		if (!match('(')); {
+			fprintf(stderr, "Error: expected '(', got %c\n", input[lookahead]);
+			exit(EXIT_FAILURE);
+		}
 		operator(n);
-		expr(n);
 
 		while(expr(n))
-			;
+			expr(n);
+	
+		if (!match(')')) {
+			fprintf(stderr, "Error: expected ')', got %c\n", input[lookahead]);
+			exit(EXIT_FAILURE);
+		}
 	}
 }
 
@@ -120,10 +157,9 @@ int main(int argc, char *argv[])
 		add_history(input);
 	
 		operator(prog);
-		expr(prog);
 
 		while(expr(prog))
-			;
+			expr(prog);
 
 		free(input);
 
