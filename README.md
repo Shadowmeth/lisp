@@ -1,2 +1,2 @@
 # lisp
-My own lusp implementation
+My own lisp implementation
